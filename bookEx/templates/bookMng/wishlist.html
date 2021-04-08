@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+<!-- block order does not matter -->
+{% block title %}
+Wishlist a Book
+{% endblock title %}
+
+{% block sidenav %}
+{% for item in item_list %} <!-- from the views.py in bookMng -->
+<li>
+    <a class="sidelinks" href="{{ item.link }}">{{ item.item }}</a> <!-- from the /admin page, double braces means we are getting that value -->
+</li>
+{% endfor %}
+{% endblock sidenav %}
+
+{% block content %}
+<h1>Wishlist</h1>
+
+<table align="center" border="2" width="400">
+    <tr>
+        <th>Book name</th>
+        <th>Wished by</th>
+    </tr>
+    {% for wish in wish_list %}
+    <tr>
+        <td>
+            {{wish.name}}
+        </td>
+        <td>
+            {{wish.wished_by}}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<div style="margin-top: 2em;">
+{% if user.is_authenticated %}
+<form action="" enctype="multipart/form-data" method="post" novalidate> <!-- multipart/form-data allows entire files to be included in the data and photos -->
+    <table>
+        {{ form.as_table }}
+        <input type="hidden" name="person" value="{{user.username}}"/>
+        <tr>
+            <td colspan="1">
+                <input type="submit" value="Submit">
+            </td>
+        </tr>
+    </table>
+    {% csrf_token %}
+</form>
+{% else %}
+<span>You can only wish for books when you are logged in.</span>
+{% endif %}
+</div>
+{% endblock content %}
+
+

@@ -4,9 +4,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import MainMenu
 from .forms import BookForm
+from .forms import WishForm
 from django.http import HttpResponseRedirect
 from .models import Book
-
+from .models import Wish
 from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
@@ -43,6 +44,7 @@ def postbook(request):
                   })
 
 
+
 def displaybooks(request):
     books = Book.objects.all()
     for b in books:
@@ -55,6 +57,25 @@ def displaybooks(request):
                       'books': books
                   })
 
+def wishlist(request):
+
+    if request.method == 'POST':
+        form = WishForm(request.POST)
+        if form.is_valid():
+            form_2 = form.save(commit=False)
+            form_2.wished_by = request.POST.get('person')
+            form_2.save()
+            return HttpResponseRedirect('/wishlist')
+    else:
+        form = WishForm()
+    return render(
+        request,
+        'bookMng/wishlist.html',
+        {
+            'form': form,
+            'item_list': MainMenu.objects.all(),
+            'wish_list': Wish.objects.all(),
+        })
 
 def aboutus(request):
     return render(

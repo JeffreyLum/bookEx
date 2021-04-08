@@ -12,14 +12,23 @@ class MainMenu(models.Model):
     def __str__(self):
         return self.item
 
+
 class Book(models.Model):
     name = models.CharField(max_length=200)
-    web = models.URLField(max_length=200,null=True)
+    web = models.URLField(max_length=200, null=True)
     price = models.DecimalField(decimal_places=2, max_digits=8)
     publishdate = models.DateField(auto_now=True)
     picture = models.FileField(upload_to='bookEx/static/uploads')
     pic_path = models.CharField(max_length=300, editable=False, blank=True)
     username = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.id)
+
+
+class Wish(models.Model):
+    name = models.CharField(max_length=200)
+    wished_by = models.CharField(max_length=200)
 
     def __str__(self):
         return str(self.id)
