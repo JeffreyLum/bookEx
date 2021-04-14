@@ -12,6 +12,7 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     return render(
@@ -23,14 +24,21 @@ def index(request):
     )
 
 
+@login_required(login_url=reverse_lazy('login'))
 def postbook(request):
     submitted = False
     if request.method == 'POST':
         # automatically links them together
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save() # saves to database
-            return HttpResponseRedirect('/postbook?submitted=True') # if everything works out, then will submit
+            #form.save() # saves to database
+            book = form.save(commit=False)  # Commit means save to database, 'False' means we dont want to save yet
+            try:
+                book.username = request.user
+            except Exception:
+                pass  # Don't do anythin
+            book.save()
+            return HttpResponseRedirect('/postbook?submitted=True')  # if everything works out, then will submit
     else:
         form = BookForm() # deletes empty form when someone clicks postbook
         if 'submitted' in request.GET:
@@ -44,7 +52,7 @@ def postbook(request):
                   })
 
 
-
+@login_required(login_url=reverse_lazy('login'))
 def displaybooks(request):
     books = Book.objects.all()
     for b in books:
@@ -85,6 +93,18 @@ def aboutus(request):
             'item_list': MainMenu.objects.all(),
         },
     )
+
+
+@login_required(login_url=reverse_lazy('login'))
+def book_detail(request, book_id):
+    book = Book.objects.get(id=book_id)
+    book.pic_path = book.picture.url[14:]  # is 14 because it gets the path /static/uploads/[THE IMAGES], 14 characters from static
+    return render(request,
+                  'bookMng/book_detail.html',
+                  {
+                      'item_list': MainMenu.objects.all(),
+                      'book': book
+                  })
 
 
 class Register(CreateView):
