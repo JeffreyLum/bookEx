@@ -1,22 +1,65 @@
 {% extends "base.html" %}
 {% load static %}
-
-<!-- block order does not matter -->
-
-{% block title %}
-Home
-{% endblock title %}
-{% block sidenav %}
-    {% for item in item_list %} <!-- from the views.py in bookMng -->
-        <li>
-            <a class="sidelinks" href="{{ item.link }}">{{ item.item }}</a> <!-- from the /admin page, double braces means we are getting that value -->
-        </li>
-    {% endfor %}
-{% endblock sidenav %}
-
-{% block content %}
-<h1 align="center">You are welcome to use Book Exchange System</h1>
-
-{% endblock content %}
+{% load widget_tweaks %}
 
 
+
+{% block body %}
+
+    <div class="d-inline-flex flex-column">
+
+        <!-- Latest Announcements -->
+        <div class="pb-3 d-inline-flex flex-column">
+            <div class="h4">Latest Announcements <i class="bi bi-megaphone"></i></div>
+            <div class="px-3">
+                {% for a in announces %}
+                <div class="d-flex flex-column py-2">
+                    <div class="d-flex flex-row align-items-center">
+                        <div class="h6 mb-0">{{ forloop.counter }}. {{ a.title }}</div>
+                        <div class="text-muted ps-1"> - {{ a.post_date }}</div>
+                    </div>
+                    <div class="ps-3">{{ a.content|linebreaksbr }}</div>
+                </div>
+                {% endfor %}
+                <div class="py-2 d-inline-flex">
+                    <a href="announcements" class="text-decoration-none">View all Announcements</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Latest Books -->
+        <div class="pb-3 d-inline-flex flex-column">
+            <div class="h4">Latest Books <i class="bi bi-book"></i></div>
+            <div class="d-inline-flex flex-row flex-wrap justify-content-evenly justify-content-lg-start">
+                {% for book in books reversed %}
+                    <div class="d-flex flex-column m-2 rounded bg-light shadow-sm hover-shadow" data-trigger="hover focus" style="width: 10rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ book.name }}">
+        
+                        <div class="card-header text-center text-truncate border-0 bg-light">
+                            <a href="book_detail/{{ book.id }}" class="text-decoration-none">
+                                {{ book.name }}
+                            </a>
+                        </div>
+        
+                        <div class="mx-auto m-0 bg-light">
+                            <a href="book_detail/{{ book.id }}">
+                                <img src="
+                                    {% if book.picture %}
+                                        {% static book.pic_path %}
+                                    {% else %}
+                                        {% static 'logo.jpg' %}
+                                    {% endif %}
+                                " height="175" />
+                            </a>
+                        </div>
+        
+                        <div class="card-footer p-2 border-0 text-muted bg-light">
+                            <div class="mt-auto user-select-none">User: {{ book.username }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+{% endblock body %}

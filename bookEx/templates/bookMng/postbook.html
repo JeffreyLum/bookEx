@@ -1,38 +1,54 @@
 {% extends "base.html" %}
 {% load static %}
-
-<!-- block order does not matter -->
-{% block title %}
-Post a Book
-{% endblock title %}
-
-{% block sidenav %}
-{% for item in item_list %} <!-- from the views.py in bookMng -->
-<li>
-    <a class="sidelinks" href="{{ item.link }}">{{ item.item }}</a> <!-- from the /admin page, double braces means we are getting that value -->
-</li>
-{% endfor %}
-{% endblock sidenav %}
-
-{% block content %}
-<h1>This is Display Book Page</h1>
-
-{% if submitted %}
-<p>Post Book Successfully</p>
-{% else %}
-<form action="" enctype="multipart/form-data" method="post" novalidate> <!-- multipart/form-data allows entire files to be included in the data and photos -->
-    <table>
-        {{ form.as_table }}
-        <tr>
-            <td colspan="1">
-                <input type="submit" value="Submit">
-            </td>
-        </tr>
-    </table>
-    {% csrf_token %}
-</form>
-{% endif %}
-
-{% endblock content %}
+{% load widget_tweaks %}
 
 
+
+{% block body %}
+
+    {% if submitted %}
+        <p>Post successful! Post another <a href="{% url 'postbook' %}">one</a>!</p>
+    {% else %}
+        <div class="container-fluid mx-md-0" style="max-width: 450px;">
+            <div class="row justify-content-start row-cols-1">
+                <form enctype="multipart/form-data" method="post" novalidate>
+                    <div class="col pb-2">
+                        <div class="row g-0 align-items-md-center">
+                            <div class="pb-1 col-auto text-start"><label for="id_name">Name</label></div>
+                            <div class="col-12">{{ form.name|add_class:"form-control"|attr:"autofocus" }}</div>
+                        </div>
+                    </div>
+                    <div class="col pb-2">
+                        <div class="row g-0 align-items-md-center">
+                            <div class="pb-1 col-auto text-start"><label for="id_web">Web</label></div>
+                            <div class="col-12">{{ form.web|add_class:"form-control" }}</div>
+                        </div>
+                    </div>
+                    <div class="col pb-2">
+                        <div class="row g-0 align-items-md-center">
+                            <div class="pb-1 col-auto text-start"><label for="id_price">Price</label></div>
+                            <div class="col-12">{{ form.price|add_class:"form-control" }}</div>
+                        </div>
+                    </div>
+                    <div class="col pb-2">
+                        <div class="row g-0 align-items-md-center">
+                            <div class="pb-1 col-auto text-start"><label for="id_picture">Picture</label></div>
+                            <div class="col-12">{{ form.picture|add_class:"form-control" }}</div>
+                        </div>
+                    </div>
+                    <div class="col pb-2">
+                        <div class="row g-0 align-items-md-center">
+                            <div class="col-auto text-start"">
+                                <button type="submit" class="btn btn-primary" role="button">Submit</button>
+                                {% csrf_token %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+
+
+{% endblock body %}

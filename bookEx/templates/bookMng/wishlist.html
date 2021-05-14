@@ -1,57 +1,58 @@
 {% extends "base.html" %}
 {% load static %}
-
-<!-- block order does not matter -->
-{% block title %}
-Wishlist a Book
-{% endblock title %}
-
-{% block sidenav %}
-{% for item in item_list %} <!-- from the views.py in bookMng -->
-<li>
-    <a class="sidelinks" href="{{ item.link }}">{{ item.item }}</a> <!-- from the /admin page, double braces means we are getting that value -->
-</li>
-{% endfor %}
-{% endblock sidenav %}
-
-{% block content %}
-<h1>Wishlist</h1>
-
-<table align="center" border="2" width="400">
-    <tr>
-        <th>Book name</th>
-        <th>Wished by</th>
-    </tr>
-    {% for wish in wish_list %}
-    <tr>
-        <td>
-            {{wish.name}}
-        </td>
-        <td>
-            {{wish.wished_by}}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-
-<div style="margin-top: 2em;">
-{% if user.is_authenticated %}
-<form action="" enctype="multipart/form-data" method="post" novalidate> <!-- multipart/form-data allows entire files to be included in the data and photos -->
-    <table>
-        {{ form.as_table }}
-        <input type="hidden" name="person" value="{{user.username}}"/>
-        <tr>
-            <td colspan="1">
-                <input type="submit" value="Submit">
-            </td>
-        </tr>
-    </table>
-    {% csrf_token %}
-</form>
-{% else %}
-<span>You can only wish for books when you are logged in.</span>
-{% endif %}
-</div>
-{% endblock content %}
+{% load widget_tweaks %}
 
 
+
+{% block header %}
+
+    <div class="d-flex flex-row align-items-center align-self-center">
+        <div class="d-flex flex-row mb-0">
+            Wishlist
+            <div class="ms-2 text-primary" href="#addWish" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="addWish">
+                <i class="bi bi-plus-square"></i>
+            </div>
+        </div>
+    </div>
+
+{% endblock header %}
+
+
+{% block body %}
+
+    {% if user.is_authenticated  %}
+    <div id="addWish" class="multi-collapse collapse">
+
+        <form enctype="multipart/form-data" method="post" novalidate>
+            <div class="form-group d-flex flex-row justify-content-start align-items-center pb-2">
+                <div class="text-nowrap">
+                    <label for="id_bookName" class="form-label">Book Name</label>
+                </div>
+                <div class="px-2">
+                        {{ form.bookName|add_class:"form-control"|attr:"autofocus" }}
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+            {% csrf_token %}
+        </form>
+    </div>
+    {% endif %}
+
+        <div class="d-flex flex-row flex-wrap justify-content-around justify-content-md-start align-items-stretch">
+            <table class="d-inline-flex">
+                <tr class="border-dark border-bottom">
+                    <th class="p-2">Book Name</th>
+                    <th class="p-2">Wished by</th>
+                </tr>
+                {% for wish in wish_list %}
+                    <tr class="border-bottom">
+                        <td class="p-2">{{ wish.bookName }}</td>
+                        <td class="p-2">{{ wish.theUser.username }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+{% endblock body %}

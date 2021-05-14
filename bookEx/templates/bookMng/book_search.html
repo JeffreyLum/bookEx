@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+
+{% block body %}
+
+    <form enctype="multipart/form-data" method="post" novalidate>
+        <div class="form-group d-flex flex-row justify-content-start align-items-center pb-2">
+            <div class="text-nowrap">
+                <label for="id_name" class="form-label">Book Search</label>
+            </div>
+            <div class="px-2">
+                {% render_field form.name class="form-control" value=searched autofocus=autofocus %}
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+        {% csrf_token %}
+    </form>
+    {% if submitted %}
+    <h5>Results for "{{ searched }}"</h5>
+
+    <div class="d-flex flex-row flex-wrap justify-content-evenly justify-content-lg-start">
+        {% for book in books %}
+            <div class="d-flex flex-column m-2 rounded bg-light shadow-sm" style="width: 10rem;">
+
+                <div class="card-header text-center text-truncate border-0 bg-light">
+                    <a href="book_detail/{{ book.id }}" class="text-decoration-none">{{ book.name }}</a>
+                </div>
+
+                <div class="mx-auto my-0 d-flex bg-light" style="width: 80%;">
+                    <a href="book_detail/{{ book.id }}" class="mx-auto">
+                        <img src="
+                            {% if book.picture %}
+                                {% static book.pic_path %}
+                            {% else %}
+                                {% static 'logo.jpg' %}
+                            {% endif %}
+                        " style="max-width: 100%; max-height: 100%;"height="175" />
+                    </a>
+                </div>
+
+                <div class="card-footer p-2 border-0 text-muted bg-light">
+                    <div class="mt-auto user-select-none">Owner: {{ book.username }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+{% endblock body %}

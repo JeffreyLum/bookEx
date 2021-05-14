@@ -1,55 +1,175 @@
 {% load static %}
-<!--tag for django -->
+{% url 'index' as home %}
+{% url 'displaybooks' as display_books %}
+{% url 'announcements' as announce %}
+{% url 'postbook' as post_book %}
+{% url 'mybooks' as my_books %}
+{% url 'book_search' as search %}
+{% url 'suprise_book' as suprise_book %}
+{% url 'wishlist' as wish %}
+{% url 'aboutus' as about_us %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
 <head>
     <meta charset="UTF-8">
-    <title>
-        {% block title %}
-            Temporary Title
-        {% endblock title %}
-    </title>
-    <link href="{% static 'main.css' %}" rel="stylesheet" type="text/css">
-</head>
-<body>
-    <div id="wrapper">
-        <header id="header">
-            <div id="logo">
-                <img src="{% static 'logo.png' %}" alt="Logo" width="100" height="100"/>
-                <span style="float: right;">
-                    {% if user.is_authenticated %}
-                        {{ user.username }}
-                        <a href="{% url 'logout' %}?next=/">Logout</a>
-                    {% else %}
-                        Not Logged In
-                        <a href="{% url 'login' %}?next=/">Login</a>
-                    {% endif %}
-                </span>
-            </div>
-            <div id="topbanner">
-                <img id="top_banner" src="{% static 'top_banner.png' %}" alt="Banner" width="500" height="200"/>
-            </div>
-        </header>
-        <aside id="leftsidebar">
-            <nav id="nav">
-                <ul>
-                    {% block sidenav %}
-                        <li>Menu1</li>
-                        <li>Menu2</li>
-                    {% endblock sidenav %}
-                </ul>
-            </nav>
-        </aside>
-        <section id="main">
-            {% block content %}
-            <h1>BookExchange</h1>
-            {% endblock content %}
-        </section>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <footer id="footer">
-            2021 Spring Django Python Base Web System
-        </footer>
+    <!-- 
+        Title will auto populate with the 'title' variable. 
+        Create the variable 'title' in each function in views.py. 
+    -->
+    <title>
+        {{ title }}
+    </title>
+
+    <!-- Bootstrap stylesheets -->
+    <link rel="stylesheet" href="{% static 'assets/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+    {% block stylesheets %}
+
+    {% endblock stylesheets %}
+</head>
+
+
+
+<body class="d-flex flex-column h-100">
+
+    <!-- Top Navigation Bar -->
+    <!-- <header class="navbar bg-dark sticky-top d-flex flex-column flex-md-row flex-md-nowrap p-0 pe-4"> -->
+    <header class=" bg-dark sticky-top container-fluid p-0">
+        <div class="row g-0 align-items-center">
+
+            <!-- image, followed by title of website -->
+            <div class="col">
+                    <a class="fs-6 p-3 shadow-none bg-transparent d-inline-flex text-decoration-none" href="/">
+                        <i class="bi bi-journals"></i>
+                        <pre class="m-0"> </pre>
+                        <div class="text-white">BookEx</div>
+                    </a>
+            </div>
+
+            <!-- Hamburger navbar-toggler -->
+            <div class="col pe-2 d-md-none">
+                <div class="p-2 d-flex justify-content-end d-md-none collapsed bg-dark text-white border-0 fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list"></i>
+                </div>
+            </div>
+
+            <!-- Sign in, Login, etc buttons -->
+            <div class="col-12 col-md-auto pe-md-2">
+                <div class="pb-2 pb-md-0 row g-0 text-end text-white justify-content-center">
+
+                    {% if user.is_authenticated %}
+                        {% if cart_size > 0 %}
+                        <div class="col-auto">
+                            <a class="pe-0 btn btn-secondary border-0 bg-transparent" href="{% url 'cart' %}">
+                                <i class="bi bi-cart2"></i>
+                                <div class="badge rounded-pill d-inline-flex bg-transparent text-warning" style="right: 10px;top: -10px;">{{ cart_size }}</div>
+                            </a>
+                        </div>
+                        {% endif %}
+                        <div class="col-auto ps-1 btn-group" role="group">
+                            <button id="userBtn" type="button" class="btn btn-primary dropdown-toggle btn-sm border-0 bg-transparent ps-0" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ user.username }}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="userBtn">
+                                <li><a class="dropdown-item" href="{{ my_books }}">My Books</a></li>
+                                <li><a class="dropdown-item" href="#">[Dropdown link]</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}?next=/"">Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="col-auto pe-1">
+                            <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}?next=/">Login</a>
+                        </div>
+                        <div class="col-auto ps-1">
+                            <a class="btn btn-warning btn-sm" href="{% url 'register' %}?next=/">Sign-up</a>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!--    Sidebar Menu
+            Auto populates the menu items.  -->
+    <div class="container-fluid">
+        <div class="row pb-8 g-0">
+
+            <nav id="sidebarMenu" class="col-md-2 d-md-block bg-white sidebar collapse shadow" style="top: 0;">
+                <div class="mt-2 pt-5 mt-md-0 pt-md-3 position-sticky">
+                    <ul class="nav flex-column">
+
+                        
+                        {% block sidenav %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == home %}active{% endif %}" href="{{ home }}">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == announce %}active{% endif %}" href="{{ announce }}">Announcements</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == post_book %}active{% endif %}" href="{{ post_book }}">Post Book</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == display_books %}active{% endif %}" href="{{ display_books }}">Display Books</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == suprise_book %}active{% endif %}" href="{{ suprise_book }}">Surprise Book!</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == search %}active{% endif %}" href="{{ search }}">Search</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == wish %}active{% endif %}" href="{{ wish }}">Wishlist</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == about_us %}active{% endif %}" href="{{ about_us }}">About Us</a>
+                            </li>
+                        {% endblock sidenav %}
+                            
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-10 ms-sm-auto px-md-4 mb-4 mt-2">
+
+                <div class="pb-3">
+                    <h2 class="border-bottom pb-2">
+
+                        {% block header %}
+                            {% if header %}
+                                {{ header }}
+                            {% else %}
+                                {{ title }}
+                            {% endif %}
+                        {% endblock header %}
+
+                    </h2>
+                </div>
+
+                {% block body %}
+                    <h1>This is our BookExchange</h1>
+                {% endblock body %}
+
+            </main>
+
+        </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-light col-md-10 ms-md-auto">
+        <div class="container" align="center">
+            <span class="text-muted">2021 Spring Django Python Base Web System</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="{% static 'assets/dist/js/bootstrap.bundle.min.js' %}"></script>
+
 </body>
 </html>

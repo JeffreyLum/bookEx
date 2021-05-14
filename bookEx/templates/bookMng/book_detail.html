@@ -1,36 +1,62 @@
 {% extends "base.html" %}
 {% load static %}
+{% load widget_tweaks %}
 
-<!-- block order does not matter -->
-{% block title %}
-Book Details
-{% endblock title %}
 
-{% block sidenav %}
-{% for item in item_list %} <!-- from the views.py in bookMng -->
-<li>
-    <a class="sidelinks" href="{{ item.link }}"> {{ item.item }} </a> <!-- from the /admin page, double braces means we are getting that value -->
-</li>
-{% endfor %}
-{% endblock sidenav %}
 
-{% block content %}
-<h1 align="center"> Book Details Page</h1>
-<table align="center" border="2" width="400">
-    <tr>
-        <td>
-                {{ book.name }}
-        </td>
-        <td>
-            <img src="{% if book.picture %}
-                              {% static book.pic_path %}
-                         {% else %}
-                              {% static 'logo.png' %}
-                          {% endif %}" width="100" height="100"/>
-        </td>
-        <td>
-            {{ book.username }}
-        </td>
-    </tr>
-</table>
-{% endblock content %}
+{% block body %}
+
+    <div class="d-flex flex-column flex-md-row rounded align-items-start">
+
+        <div class="d-flex flex-column p-0 mx-auto mx-md-0 bg-transparent">
+
+            <img src="
+                {% if book.picture %}
+                    {% static book.pic_path %}
+                {% else %}
+                    {% static 'logo.jpg' %}
+                {% endif %}
+            " height="175"/>
+
+            <div class="mx-auto p-2">
+                {% if book.username.id == user.id %}
+                    <button class="btn btn-warning disabled" type="button">Add to Cart</button>
+                {% else %}
+                <form enctype="multipart/form-data" method="post" novalidate>
+                    {% render_field form.seller_book_id value=book.id type="hidden" %}
+                    <button class="btn btn-warning" type="submit">Add to Cart</button>
+                    {% csrf_token %}
+                </form>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div class="ps-0 pt-2 ps-md-2 d-flex flex-column flex-wrap bg-transparent">
+            <table class="table-borderless d-flex flex-column">
+                <tr>
+                    <th class="pb-2 text-end">Title: </th>
+                    <td class="pb-2 ps-2">{{ book.name }}</td>
+                </tr>
+                <tr>
+                    <th class="text-end">Web: </th>
+                    <td class="py-2 ps-2"><a href="{{ book.web }}" class="text-decoration-none" target="_blank">{{ book.web|truncatechars:45 }} <i class="bi bi-box-arrow-up-right"></i></a></td>
+                </tr>
+                <tr>
+                    <th class="text-end">Price: </th>
+                    <td class="py-2 ps-2">${{ book.price }}</td>
+                </tr>
+                <tr>
+                    <th class="text-end">Published: </th>
+                    <td class="py-2 ps-2">{{ book.publishdate }}</td>
+                </tr>
+                <tr>
+                    <th class="pt-2 text-end">User: </th>
+                    <td class="pt-2 ps-2">{{ book.username }}</td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+{% endblock body %}

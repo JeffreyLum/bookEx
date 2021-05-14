@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+
+{% block header %}
+
+    <div class="d-flex flex-row align-items-center align-self-center">
+        <div class="d-flex flex-row mb-0">
+            Surprise Book
+            <a class="ms-2 text-success" href="{% url 'suprise_book' %}" role="button">
+                <i class="bi bi-arrow-repeat"></i>
+            </a>
+        </div>
+    </div>
+
+{% endblock header %}
+
+
+{% block body %}
+
+        <div class="d-flex flex-column m-2 shadow-sm rounded mx-auto bg-light" style="width: 10rem;">
+            <div class="mx-auto px-4 pt-4">
+                <a href="book_detail/{{ book.id }}">
+                    <img src="
+                        {% if book.picture %}
+                            {% static book.pic_path %}
+                        {% else %}
+                            {% static 'logo.jpg' %}
+                        {% endif %}
+                    " width="120" height="175" />
+                </a>
+            </div>
+
+            <div class="card-footer border-0 text-center bg-light" role="alert">
+                <a href="book_detail/{{ book.id }}" class="btn btn-success btn-sm">View Details</a>
+            </div>
+        </div>
+
+{% endblock body %}

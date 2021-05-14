@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+
+
+{% block header %}
+
+    <div class="d-flex flex-row align-items-center align-self-center">
+        <div class="d-flex flex-row mb-0">
+            Announcements
+            {% if user.is_superuser %}
+            <div class="ms-2 text-primary" href="#new" data-bs-toggle="collapse" role="button" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="new announcements">
+                <i class="bi bi-plus-square"></i>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock header %}
+
+
+
+{% block body %}
+
+    {% if user.is_superuser %}
+    <div id="new" class="multi-collapse collapse">
+
+        <form enctype="multipart/form-data" method="post" novalidate>
+            <div class="form-group d-flex flex-column multi-collapse collapse" id="new">
+                <div class="py-2 d-inline-flex">
+                    <div style="width:14rem;">
+                        <label for="title" class="form-label">Title</label>
+                        {{ form.title|add_class:"form-control"|attr:"id:title"|attr:"placeholder:Title" }}
+                    </div>
+                </div>
+                <div class="py-2 d-flex flex-wrap">
+                    <div style="width:33rem;">
+                        <label for="content_area" class="form-label">Content</label>
+                        {{ form.content|add_class:"form-control"|attr:"id:content_area"|attr:"placeholder:Enter content"|attr:"rows:4" }}
+                    </div>
+                </div>
+                <div class="py-2 d-flex flex-row">
+                    <button class="d-inline-flex btn btn-primary me-1" type="submit">Submit</button>
+                    <div class="d-inline-flex btn btn-secondary ms-1" href="#new" data-bs-toggle="collapse" role="button" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="new announcements">Cancel</div>
+                </div>
+            </div>
+            {% csrf_token %}
+        </form>
+        
+    </div>
+    {% endif %}
+
+
+    <div id="announcements" class="multi-collapse collape show">
+        {% for a in announces %}
+        <div class="accordion rounded py-2" id="accordion{{ a.id }}">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ a.id }}">
+                    <div class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ a.id }}" aria-expanded="false" aria-controls="collapse{{ a.id }}">
+                        <div class="pe-2 text-muted">
+                            {{ a.post_date }} -
+                        </div>
+                        {{ a.title }}
+                    </div>
+                </h2>
+                <div id="collapse{{ a.id }}" class=" collapse" aria-labelledby="heading{{ a.id }}" data-bs-parent="#accordion{{ a.id }}">
+                    <div class="accordion-body">
+                        <div class="d-flex flex-column">
+                            <div>{{ a.content|linebreaksbr }}</div>
+                            <div class="text-muted mt-2">[ {{ a.username }} ]</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock body %}

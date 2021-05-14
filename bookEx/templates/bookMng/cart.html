@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block body %}
+
+    <div class="d-flex flex-column align-items-center">
+        <div class="py-1 d-inline-flex">Subtotal ({{ cart_size }} items): <div class="ps-2 fw-bold"> ${{ total_price }}</div></div>
+        <div class="py-1 d-flex">
+            <a href="{% url 'checkout' %}" class="btn btn-warning {% if cart_size == 0 %}disabled{% endif %}" type="submit">Go to checkout</a>
+        </div>
+    </div>
+    <hr>
+    {% for book in books %}
+    <div class="py-2 d-flex flex-column flex-md-row rounded align-items-start">
+        <div class="d-flex flex-column p-0 mx-auto mx-md-0 bg-transparent">
+            <img src="
+                {% if book.picture %}
+                    {% static book.pic_path %}
+                {% else %}
+                    {% static 'logo.jpg' %}
+                {% endif %}
+            " height="175"/>
+            <div class="mx-auto pt-2">
+                <form enctype="multipart/form-data" method="post" novalidate>
+                    <input type="hidden" value="{{ book.id }}" name="to_remove">
+                    <button class="btn btn-warning" type="submit">Remove</button>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+
+        <div class="ps-0 pt-2 ps-md-2 d-flex flex-column flex-wrap bg-transparent">
+            <table class="table-borderless d-flex flex-column">
+                <tr>
+                    <th class="pb-2 text-end">Title: </th>
+                    <td class="pb-2 ps-2">{{ book.name }}</td>
+                </tr>
+                <tr>
+                    <th class="text-end">Web: </th>
+                    <td class="py-2 ps-2"><a href="{{ book.web }}" class="text-decoration-none" target="_blank">{{ book.web|truncatechars:45 }} <i class="bi bi-box-arrow-up-right"></i></a></td>
+                </tr>
+                <tr>
+                    <th class="text-end">Price: </th>
+                    <td class="py-2 ps-2">${{ book.price }}</td>
+                </tr>
+                <tr>
+                    <th class="text-end">Published: </th>
+                    <td class="py-2 ps-2">{{ book.publishdate }}</td>
+                </tr>
+                <tr>
+                    <th class="pt-2 text-end">User: </th>
+                    <td class="pt-2 ps-2">{{ book.username }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <hr>
+    {% endfor %}
+
+{% endblock body %}

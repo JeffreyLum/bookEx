@@ -1,40 +1,36 @@
 {% extends "base.html" %}
 {% load static %}
 
-<!-- block order does not matter -->
-{% block title %}
-Book Display
-{% endblock title %}
 
-{% block sidenav %}
-{% for item in item_list %} <!-- from the views.py in bookMng -->
-<li>
-    <a class="sidelinks" href="{{ item.link }}"> {{ item.item }} </a> <!-- from the /admin page, double braces means we are getting that value -->
-</li>
-{% endfor %}
-{% endblock sidenav %}
+{% block body %}
 
-{% block content %}
-<h1 align="center"> This is Display Books Page</h1>
-<table align="center" border="2" width="400">
-    {% for book in books %}
-    <tr>
-        <td>
-            <a href="book_detail/{{ book.id }}">
-                {{ book.name }}
-            </a>
-        </td>
-        <td>
-            <img src="{% if book.picture %}
-                              {% static book.pic_path %}
-                         {% else %}
-                              {% static 'logo.png' %}
-                          {% endif %}" width="100" height="100"/>
-        </td>
-        <td>
-                {{ book.username }}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-{% endblock content %}
+    <div class="d-flex flex-row flex-wrap justify-content-evenly justify-content-lg-start">
+        {% for book in books %}
+            <div class="d-flex flex-column m-2 rounded bg-light shadow-sm hover-shadow" data-trigger="hover focus" style="width: 10rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ book.name }}">
+
+                <div class="card-header text-center text-truncate border-0 bg-light">
+                    <a href="book_detail/{{ book.id }}" class="text-decoration-none">
+                        {{ book.name }}
+                    </a>
+                </div>
+
+                <div class="mx-auto m-0 bg-light">
+                    <a href="book_detail/{{ book.id }}">
+                        <img src="
+                            {% if book.picture %}
+                                {% static book.pic_path %}
+                            {% else %}
+                                {% static 'logo.jpg' %}
+                            {% endif %}
+                        " height="175" />
+                    </a>
+                </div>
+
+                <div class="card-footer p-2 border-0 text-muted bg-light">
+                    <div class="mt-auto user-select-none">User: {{ book.username }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock body %}
